@@ -9,7 +9,7 @@ Pillow>=8.0.0
 # YOLO
 ultralytics>=8.0.0
 
-# Pose Estimation
+# Pose Estimation - Use this instead of regular mediapipe
 mediapipe>=0.10.0
 
 # Tracking & Math
@@ -24,6 +24,3 @@ pandas>=1.3.0
 
 # Data Handling
 scikit-learn>=1.0.0
-
-# Video Download (optional)
-yt-dlp>=2023.11.16
