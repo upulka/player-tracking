@@ -1,3 +1,4 @@
 # ignore the venv folder
 venv/Lib
-vevnv/Lib
+
+data/videos

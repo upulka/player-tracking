@@ -7,24 +7,26 @@ import seaborn as sns
 import numpy as np
 from datetime import datetime
 
-# Add the src directory to Python path
+# Add the current directory to Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(current_dir, 'src')
-sys.path.insert(0, src_dir)
-
-# Add the project root directory to Python path
-project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, project_root)
+sys.path.insert(0, current_dir)
 
 # Now import from src
 from src.main_pipeline import SportsPlayerTracker
 
 def generate_report(results, performance_metrics, video_name):
     """Generate comprehensive report"""
+    if not results:
+        print(f"No results for {video_name}")
+        return ""
+        
     # Calculate basic metrics
     total_detections = sum(len(frame['detections']) for frame in results)
     total_tracks = len(set(track['track_id'] for frame in results for track in frame['tracks']))
-    avg_confidence = np.mean([d['confidence'] for frame in results for d in frame['detections']]) if any(frame['detections'] for frame in results) else 0
+    
+    # Calculate average confidence
+    all_confidences = [d['confidence'] for frame in results for d in frame['detections']]
+    avg_confidence = np.mean(all_confidences) if all_confidences else 0
     
     # Create metrics plot
     plt.figure(figsize=(12, 4))
@@ -71,7 +73,7 @@ def generate_report(results, performance_metrics, video_name):
 
 ## Model Architecture
 - **Player Detection:** YOLOv8
-- **Pose Estimation:** MediaPipe Pose
+- **Pose Estimation:** Simplified Pose Estimation
 - **Tracking:** Simple ID Assignment
 
 ## Sample Output
@@ -110,11 +112,16 @@ def main():
     # Initialize tracker
     tracker = SportsPlayerTracker()
     
-    # VIDEO FILES CONFIGURATION - MODIFY THIS SECTION FOR YOUR VIDEOS
+    # VIDEO FILES CONFIGURATION - MODIFY THIS FOR YOUR VIDEOS
     video_files = [
-        "data/videos/sports_video_1.mp4",
-        "data/videos/sports_video_2.mp4", 
-        "data/videos/sports_video_3.mp4",
+        "data/videos/Badminton_1.mp4",
+        "data/videos/Badminton_2.mp4", 
+        "data/videos/Cricket_Batting_1.mp4",
+        "data/videos/Cricket_Batting_2.mp4",
+        "data/videos/Cricket_Batting_3.mp4", 
+        "data/videos/Cricket_Bowling_1.mp4",
+        "data/videos/Cricket_Bowling_2.mp4",
+        "data/videos/Cricket_Bowling_3.mp4", 
         # Add more videos as needed
     ]
     
@@ -123,11 +130,9 @@ def main():
     
     if not existing_videos:
         print("No video files found!")
-        print("Please:")
-        print("1. Download sports videos (5-10 seconds each)")
-        print("2. Save them in 'data/videos/' folder")
-        print("3. Name them: sports_video_1.mp4, sports_video_2.mp4, etc.")
-        print("4. Update the video_files list in run_pipeline.py")
+        print("Please add your video files to the data/videos/ folder")
+        print("Expected names: sports_video_1.mp4, sports_video_2.mp4, etc.")
+        print("Or update the video_files list in run_pipeline.py")
         return
     
     print(f"Found {len(existing_videos)} video(s) to process")
@@ -136,14 +141,14 @@ def main():
     
     for video_path in existing_videos:
         print(f"\n{'='*50}")
-        print(f"📹 PROCESSING: {os.path.basename(video_path)}")
+        print(f"PROCESSING: {os.path.basename(video_path)}")
         print(f"{'='*50}")
         
         # Output path for processed video
         output_path = f"outputs/tracked_{os.path.basename(video_path)}"
         
-        # Process video (50 frames for quick testing)
-        results = tracker.process_video(video_path, output_path, max_frames=50)
+        # Process video (30 frames for testing)
+        results = tracker.process_video(video_path, output_path, max_frames=30)
         all_results[video_path] = results
         
         if results:
@@ -156,11 +161,12 @@ def main():
             
             print(f"COMPLETED: {os.path.basename(video_path)}")
             print(f"Performance: {performance_metrics['fps']:.2f} FPS")
+        else:
+            print(f"No results for {os.path.basename(video_path)}")
     
     print(f"\n PIPELINE COMPLETED!")
     print(f"   Processed {len(existing_videos)} video(s)")
     print(f"   Outputs saved in 'outputs' folder")
-    print(f"   Check the generated reports and videos")
 
 if __name__ == "__main__":
     main()
