@@ -1,11 +1,19 @@
-# run_pipeline.py - MAIN FILE TO RUN
+# run_pipeline.py
+import sys
 import os
 import json
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from datetime import datetime
-from src.main_pipeline import SportsPlayerTracker
+
+# Add the src directory to Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(current_dir, 'src')
+sys.path.insert(0, src_dir)
+
+# Now import from src
+from main_pipeline import SportsPlayerTracker
 
 def generate_report(results, performance_metrics, video_name):
     """Generate comprehensive report"""
@@ -90,7 +98,7 @@ def generate_report(results, performance_metrics, video_name):
     return report
 
 def main():
-    print("🚀 Starting Sports Player Tracking Pipeline...")
+    print("Starting Sports Player Tracking Pipeline...")
     
     # Create outputs directory
     os.makedirs('outputs', exist_ok=True)
@@ -99,14 +107,10 @@ def main():
     tracker = SportsPlayerTracker()
     
     # VIDEO FILES CONFIGURATION - MODIFY THIS SECTION FOR YOUR VIDEOS
-    # ===============================================================
-    # Put your video files in the 'data/videos/' folder
-    # Name them: sports_video_1.mp4, sports_video_2.mp4, etc.
-    
     video_files = [
-        "data/videos/sports_video_1.mp4",  # ← CHANGE THIS PATH
-        "data/videos/sports_video_2.mp4",  # ← CHANGE THIS PATH  
-        "data/videos/sports_video_3.mp4",  # ← CHANGE THIS PATH
+        "data/videos/sports_video_1.mp4",
+        "data/videos/sports_video_2.mp4", 
+        "data/videos/sports_video_3.mp4",
         # Add more videos as needed
     ]
     
@@ -114,7 +118,7 @@ def main():
     existing_videos = [v for v in video_files if os.path.exists(v)]
     
     if not existing_videos:
-        print("❌ No video files found!")
+        print("No video files found!")
         print("Please:")
         print("1. Download sports videos (5-10 seconds each)")
         print("2. Save them in 'data/videos/' folder")
@@ -146,10 +150,10 @@ def main():
             video_name = os.path.basename(video_path).replace('.mp4', '')
             report = generate_report(results, performance_metrics, video_name)
             
-            print(f"✅ COMPLETED: {os.path.basename(video_path)}")
-            print(f"📊 Performance: {performance_metrics['fps']:.2f} FPS")
+            print(f"COMPLETED: {os.path.basename(video_path)}")
+            print(f"Performance: {performance_metrics['fps']:.2f} FPS")
     
-    print(f"\n🎉 PIPELINE COMPLETED!")
+    print(f"\n PIPELINE COMPLETED!")
     print(f"   Processed {len(existing_videos)} video(s)")
     print(f"   Outputs saved in 'outputs' folder")
     print(f"   Check the generated reports and videos")
