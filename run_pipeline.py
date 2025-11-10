@@ -12,8 +12,12 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 src_dir = os.path.join(current_dir, 'src')
 sys.path.insert(0, src_dir)
 
+# Add the project root directory to Python path
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_root)
+
 # Now import from src
-from main_pipeline import SportsPlayerTracker
+from src.main_pipeline import SportsPlayerTracker
 
 def generate_report(results, performance_metrics, video_name):
     """Generate comprehensive report"""
